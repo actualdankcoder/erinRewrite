@@ -3,3 +3,11 @@
 # 🚀 The Erin Rewrite Project
 
 This repository will cover core revisions to the erin project
+
+## Goals:
+
+- LRU Caching
+- Unfified Database Adapter
+- Better Cooldowns
+- Performance improvements with Cog Loading
+- Better Error handling
