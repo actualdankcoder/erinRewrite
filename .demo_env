@@ -1,0 +1,10 @@
+# You can copy the contents of this file into a new file called ".env" in this
+# directory and fill in the environment variables.
+
+# Discord bot token (required)
+BOT_TOKEN=
+
+# MongoDB connection URI (required)
+# If you installed MongoDB on the same machine that is running Erin you can
+# usually just type "localhost"
+DATABASE_URI=
