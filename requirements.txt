@@ -1,7 +1,6 @@
 python-dotenv
 discord.py
 motor
-pymongo
 # Make sure to install the "Microsoft C++ Build tools"
 # You can download an installer from
 # https://visualstudio.microsoft.com/visual-cpp-build-tools/
