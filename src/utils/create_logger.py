@@ -3,8 +3,8 @@ A module that creates a simple logger and returns it.
 """
 
 import logging
-import coloredlogs
 
+import coloredlogs
 
 DEFAULT_FORMAT = "%(asctime)s,%(msecs)03d %(hostname)s " \
                  "%(name)s[%(process)d] %(levelname)s %(message)s"
@@ -28,6 +28,6 @@ def create_logger(name: str, level: int = logging.INFO,
         if console_handler not in logger.handlers:
             logger.addHandler(hdlr=console_handler)
         logger.setLevel(level=level)
-    logger.debug(f"Created logger named {repr(name)} with level {repr(level)}")
-    logger.debug(f"Handlers for {repr(name)}: {repr(logger.handlers)}")
+    logger.debug(f"Created logger named {name} with level {level}")
+    logger.debug(f"Handlers for {name}: {repr(logger.handlers)}")
     return logger

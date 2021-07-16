@@ -1,11 +1,14 @@
-import asyncio
-from enum import Enum
+import logging
 from typing import Union
 
 from lru import LRU
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import MongoClient
 
-from singleton import Singleton
+from .create_logger import create_logger
+from .singleton import Singleton
+
+# Configure logger
+logger = create_logger(name=__file__, level=logging.DEBUG)
 
 
 class CacheManger:
@@ -17,51 +20,52 @@ class CacheManger:
         self.cache = LRU(cache_size)
 
 
-class UserKeys(Enum):
-    pass
-
-
 def get_blank_user_template() -> dict:
     user_template = {
-
+        "id": None
     }
     return user_template.copy()
 
 
-class GuildKeys(Enum):
-    PREFIXES = "prefixes"
-
-
 def get_blank_guild_template() -> dict:
     guild_template = {
-        GuildKeys.PREFIXES: ["-"]
+        "id": None,
+        "prefixes": ["-"]
     }
     return guild_template.copy()
 
 
-class AsyncErinDatabase(metaclass=Singleton):
+class ErinDatabase(metaclass=Singleton):
     """
     Responsible for making database requests across all cogs
-    (AsyncErinDatabase is a singleton so you can instantiate in each cog
+    (ErinDatabase is a singleton so you can instantiate in each cog
     and it won't create more connections)
     """
 
     def __init__(self, URI: str):
-        self.database = AsyncIOMotorClient(URI)
+        logger.debug("Starting MongoDB connection")
+        self.database = MongoClient(URI)
         self.erin_db = self.database["erin_rewrite"]
         self.users_col = self.erin_db["users"]
         self.guild_col = self.erin_db["guilds"]
-        self.task_queue = asyncio.Queue()
         self.cache = CacheManger()
 
-    async def register_user_if_needed(self, user_id: Union[int, str]):
-        if await self.users_col.find_one(str(user_id)) is None:
-            await self.users_col.insert_one(get_blank_user_template())
+    def register_user_if_needed(self, user_id: int):
+        user_id = str(user_id)
+        if self.users_col.find_one({"id": user_id}) is None:
+            doc = get_blank_user_template()
+            doc["id"] = user_id
+            self.users_col.insert_one(doc)
+            logger.debug(f"User ID {user_id} has been registered!")
 
-    async def register_guild_if_needed(self, guild_id: Union[int, str]):
-        if await self.guild_col.find_one(str(guild_id)) is None:
-            await self.guild_col.insert_one(get_blank_guild_template())
+    def register_guild_if_needed(self, guild_id: int):
+        guild_id = str(guild_id)
+        if self.guild_col.find_one({"id": guild_id}) is None:
+            doc = get_blank_guild_template()
+            doc["id"] = guild_id
+            self.guild_col.insert_one(doc)
+            logger.debug(f"Guild ID {guild_id} has been registered!")
 
-    async def get_prefix(self, guild_id: Union[int, str]) -> list[str]:
-        await self.register_guild_if_needed(guild_id)
-        return self.guild_col.find_one(str(guild_id))[GuildKeys.PREFIXES]
+    def get_prefix(self, guild_id: int) -> list[str]:
+        self.register_guild_if_needed(guild_id)
+        return self.guild_col.find_one({"id": str(guild_id)})["prefixes"]
