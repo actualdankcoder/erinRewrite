@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from utils.bindings import ErinDatabase
 from utils.create_logger import create_logger
 
+from typing import List
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
 logger.info("Starting Erin...")
@@ -38,7 +39,7 @@ db_uri = load_env_var("DATABASE_URI")
 erin_db = ErinDatabase(URI=db_uri)
 
 
-def get_prefix(client, message) -> list[str]:
+def get_prefix(client, message) -> List[str]:
     return erin_db.get_prefix(message.guild.id)
 
 

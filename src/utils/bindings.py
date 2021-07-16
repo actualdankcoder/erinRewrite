@@ -1,5 +1,5 @@
 import logging
-from typing import Union
+from typing import List
 
 from lru import LRU
 from pymongo import MongoClient
@@ -45,7 +45,7 @@ class ErinDatabase(metaclass=Singleton):
     def __init__(self, URI: str):
         logger.debug("Starting MongoDB connection")
         self.database = MongoClient(URI)
-        self.erin_db = self.database["erin_rewrite"]
+        self.erin_db = self.database.erin_rewrite
         self.users_col = self.erin_db["users"]
         self.guild_col = self.erin_db["guilds"]
         self.cache = CacheManger()
@@ -66,6 +66,6 @@ class ErinDatabase(metaclass=Singleton):
             self.guild_col.insert_one(doc)
             logger.debug(f"Guild ID {guild_id} has been registered!")
 
-    def get_prefix(self, guild_id: int) -> list[str]:
+    def get_prefix(self, guild_id: int) -> List[str]:
         self.register_guild_if_needed(guild_id)
         return self.guild_col.find_one({"id": str(guild_id)})["prefixes"]
