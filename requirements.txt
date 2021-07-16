@@ -5,3 +5,4 @@ motor
 # You can download an installer from
 # https://visualstudio.microsoft.com/visual-cpp-build-tools/
 lru-dict
+coloredlogs
