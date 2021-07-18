@@ -35,10 +35,10 @@ def get_blank_guild_template() -> dict:
     return guild_template.copy()
 
 
-class ErinDatabase(metaclass=Singleton):
+class AsyncErinDatabase(metaclass=Singleton):
     """
     Responsible for making database requests across all cogs
-    (ErinDatabase is a singleton so you can instantiate in each cog
+    (AsyncErinDatabase is a singleton so you can instantiate in each cog
     and it won't create more connections)
     """
 
@@ -50,34 +50,27 @@ class ErinDatabase(metaclass=Singleton):
         self.guild_col = self.erin_db["guilds"]
         self.cache_manager = CacheManger()
 
-    async def register_user_if_needed(self, user_id: int):
-        user_id = str(user_id)
-        callback=await self.users_col.find_one({"id": user_id})
+    async def get_user(self, user_id: str) -> dict:
+        callback = await self.users_col.find_one({"id": user_id})
         if callback is None:
             doc = get_blank_user_template()
             doc["id"] = user_id
             await self.users_col.insert_one(doc)
             logger.debug(f"User ID {user_id} has been registered!")
+            return doc
+        else:
+            return callback
 
-    async def register_guild_if_needed(self, guild_id: int):
-        guild_id = str(guild_id)
-
-        # Verify if the guild prefix was cached before
-        if self.cache_manager.prefix_cache.has_key(guild_id):
-            return self.cache_manager.prefix_cache[guild_id]
-            
-        callback=await self.guild_col.find_one({"id": guild_id})
+    async def get_guild(self, guild_id: str) -> dict:
+        callback = await self.guild_col.find_one({"id": guild_id})
         if callback is None:
             doc = get_blank_guild_template()
             doc["id"] = guild_id
             await self.guild_col.insert_one(doc)
-            self.cache_manager.prefix_cache[guild_id]=doc["prefixes"]
             logger.debug(f"Guild ID {guild_id} has been registered!")
-            return doc["prefixes"]
+            return doc
         else:
-            self.cache_manager.prefix_cache[guild_id]=callback["prefixes"]
-            return callback["prefixes"]
+            return callback
 
     async def get_prefix(self, guild_id: int) -> List[str]:
-        
-        return await self.register_guild_if_needed(guild_id)
+        return (await self.get_guild(str(guild_id)))["prefixes"]

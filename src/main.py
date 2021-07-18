@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from utils.bindings import ErinDatabase
+from utils.bindings import AsyncErinDatabase
 from utils.create_logger import create_logger
 
 from typing import List
@@ -36,7 +36,7 @@ token = load_env_var("BOT_TOKEN")
 db_uri = load_env_var("DATABASE_URI")
 
 # Create connection to database
-erin_db = ErinDatabase(URI=db_uri)
+erin_db = AsyncErinDatabase(URI=db_uri)
 
 
 def get_prefix(client, message) -> List[str]:
