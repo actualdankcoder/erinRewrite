@@ -11,6 +11,7 @@ from utils.bindings import AsyncErinDatabase
 from utils.create_logger import create_logger
 
 from typing import List
+
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
 logger.info("Starting Erin...")
@@ -26,8 +27,10 @@ def load_env_var(var_name: str) -> str:
     logger.debug(f"Loading environment variable {repr(var_name)}")
     var = getenv(var_name)
     if var is None or var == "":
-        logger.error(f"Could not find {repr(var_name)} in environment variables!")
-        raise ValueError(f"Could not find {repr(var_name)} in environment variables!")
+        logger.error(f"Could not find {repr(var_name)} in environment "
+                     f"variables!")
+        raise ValueError(f"Could not find {repr(var_name)} in environment "
+                         f"variables!")
     return var
 
 
@@ -39,7 +42,7 @@ db_uri = load_env_var("DATABASE_URI")
 erin_db = AsyncErinDatabase(URI=db_uri)
 
 
-def get_prefix(client, message) -> List[str]:
+def get_prefix(_, message) -> List[str]:
     return erin_db.get_prefix(message.guild.id)
 
 
@@ -59,10 +62,12 @@ logger.info("Loading extensions...")
 cog_path = Path(__file__).parent / "cogs"
 logger.debug(f"Path to cogs is {cog_path}")
 assert cog_path.exists() and cog_path.is_dir()
+cogs_loaded = 0
 for file in cog_path.iterdir():
     if file.suffix == ".py" and not file.name.startswith("_"):
-        erin.load_extension(f"cogs.{file.stem}")
-logger.debug(f"Loaded {len(list(cog_path.iterdir()))} cog(s)")
+        ext_path = f"cogs.{file.stem}"
+        logger.debug(f"Loading extension \"{ext_path}\"")
+        erin.load_extension(ext_path)
+        cogs_loaded += 1
 
-logger.info("Running bot")
 erin.run(token)
