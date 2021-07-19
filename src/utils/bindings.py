@@ -1,23 +1,14 @@
 import logging
 from typing import List
 
-from lru import LRU
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from .create_logger import create_logger
-from .singleton import Singleton
+from src.utils.cacher import CacheManger
+from src.utils.create_logger import create_logger
+from src.utils.singleton import Singleton
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
-
-
-class CacheManger:
-    """
-    Responsible for caching
-    """
-
-    def __init__(self, cache_size: int = 1000):
-        self.prefix_cache = LRU(cache_size)
 
 
 def get_blank_user_template() -> dict:
