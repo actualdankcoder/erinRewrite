@@ -117,6 +117,26 @@ class Config(commands.Cog):
                                 f"this server!"
         await ctx.message.reply(embed=embed)
 
+    @prefix.command()
+    @commands.has_permissions(manage_guild=True)
+    async def remove(self, ctx, *, prefix: str = None):
+        embed = self.make_error_embed(ctx)
+        if not prefix:
+            embed.description = "Please mention a valid prefix to be remove!"
+            await ctx.message.reply(embed=embed)
+            return
+        try:
+            await erin_db.remove_prefix(ctx.message.guild.id, prefix)
+        except PrefixError as exc:
+            embed.description = str(exc)
+        else:
+            embed = self.make_embed(ctx)
+            embed.title = "Successfully removed prefix!"
+            embed.description = f"Successfully removed the prefix " \
+                                f"\"{prefix}\" from my list of prefixes for " \
+                                f"this server!"
+        await ctx.message.reply(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Config(bot))

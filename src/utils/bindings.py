@@ -117,7 +117,7 @@ class AsyncErinDatabase(metaclass=Singleton):
         if old_prefix not in prefixes:
             raise PrefixDoesNotExist(f"The prefix \"{old_prefix}\" isn't an "
                                      f"existing prefix!")
-        if len(prefixes) - 1 > MIN_PREFIXES_PER_GUILD:
+        if len(prefixes) - 1 < MIN_PREFIXES_PER_GUILD:
             raise TooManyPrefixes(f"You are already at the minimum amount "
                                   f"({MIN_PREFIXES_PER_GUILD}) of prefixes!")
         prefixes.pop(prefixes.index(old_prefix))
