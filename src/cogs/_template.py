@@ -2,11 +2,11 @@ import logging
 from os import getenv
 from pathlib import Path
 
+from discord.ext import commands
 from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase
 from src.utils.create_logger import create_logger
-from discord.ext import commands
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
@@ -41,7 +41,7 @@ class CogName(commands.Cog):
     TODO: Put description of cog here
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.Cog.listener()
