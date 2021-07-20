@@ -90,7 +90,7 @@ class AsyncErinDatabase(metaclass=Singleton):
         prefixes = guild["prefixes"]
         if len(new_prefix) > MAX_PREFIX_LENGTH:
             raise TooLongPrefix(f"The prefix \"{new_prefix}\" is too long! "
-                                f"(the prefix must be less then or equal to"
+                                f"(the prefix must be less then or equal to "
                                 f"{MAX_PREFIX_LENGTH} character(s))")
         if len(new_prefix) < MIN_PREFIX_LENGTH:
             raise TooShortPrefix(f"The prefix \"{new_prefix}\" is too short! "
