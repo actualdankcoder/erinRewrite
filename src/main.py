@@ -42,7 +42,6 @@ db_uri = load_env_var("DATABASE_URI")
 erin_db = AsyncErinDatabase(URI=db_uri)
 
 
-# TODO: Make pingable to answer to commands
 async def get_prefix(_, message) -> List[str]:
     prefixes = await erin_db.get_prefix(message.guild.id)
     return commands.when_mentioned_or(*prefixes)(erin, message)
