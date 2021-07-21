@@ -100,6 +100,7 @@ class Fun(commands.Cog):
         try:
             uwu_text = response["owo"]
         except KeyError:
+            logger.error(f"API error! Response:\n{response}")
             embed.description = "API ewwow occuwed :cry:"
             await ctx.send(embed=embed)
         else:
@@ -122,6 +123,7 @@ class Fun(commands.Cog):
             embed.description = response["response"]
             embed.set_thumbnail(url=response["url"])
         except KeyError:
+            logger.error(f"API error! Response:\n{response}")
             embed = self.make_error_embed(ctx)
             embed.description = "API error occurred! :cry:"
             await ctx.send(embed=embed)
@@ -138,6 +140,7 @@ class Fun(commands.Cog):
         try:
             embed.set_image(url=response["file"])
         except KeyError:
+            logger.error(f"API error! Response:\n{response}")
             embed = self.make_error_embed(ctx)
             embed.description = "API error occurred! :cry:"
             await ctx.send(embed=embed)
