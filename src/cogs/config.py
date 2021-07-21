@@ -94,7 +94,6 @@ class Config(commands.Cog):
             embed = self.make_error_embed(ctx)
             embed.description = "Please mention a sub-command such as " \
                                 "`add` or `remove`!"
-            embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
             await ctx.message.reply(embed=embed)
 
     @prefix.command()
