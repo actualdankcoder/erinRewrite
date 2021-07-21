@@ -53,7 +53,6 @@ class Config(commands.Cog):
                          icon_url=ctx.message.author.avatar_url)
         embed.set_author(name=self.bot.user.display_name,
                          icon_url=self.bot.user.avatar_url)
-        embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
         return embed
 
     def make_error_embed(self, ctx) -> Embed:
@@ -77,6 +76,7 @@ class Config(commands.Cog):
     @commands.cooldown(10, 120, BucketType.guild)
     async def prefixes(self, ctx):
         embed = self.make_embed(ctx)
+        embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
         embed.title = f"My prefixes for {ctx.message.guild}"
         prefixes = await erin_db.get_prefix(ctx.message.guild.id)
         all_prefixes = "".join([f"`{prefix}`, " for prefix in prefixes])
@@ -111,6 +111,7 @@ class Config(commands.Cog):
             embed.description = str(exc)
         else:
             embed = self.make_embed(ctx)
+            embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
             embed.title = "Successfully added prefix!"
             embed.description = f"Successfully added the prefix " \
                                 f"\"{prefix}\" to my list of prefixes for " \
@@ -131,6 +132,7 @@ class Config(commands.Cog):
             embed.description = str(exc)
         else:
             embed = self.make_embed(ctx)
+            embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
             embed.title = "Successfully removed prefix!"
             embed.description = f"Successfully removed the prefix " \
                                 f"\"{prefix}\" from my list of prefixes for " \

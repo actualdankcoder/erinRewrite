@@ -54,7 +54,6 @@ class CogName(commands.Cog):
                          icon_url=ctx.message.author.avatar_url)
         embed.set_author(name=self.bot.user.display_name,
                          icon_url=self.bot.user.avatar_url)
-        embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
         return embed
 
     def make_error_embed(self, ctx) -> Embed:
