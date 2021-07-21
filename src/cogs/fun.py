@@ -147,6 +147,21 @@ class Fun(commands.Cog):
         else:
             await ctx.message.reply(embed=embed)
 
+    @commands.cooldown(1, 5, BucketType.user)
+    @commands.command(name="randomname", aliases=["random_name"],
+                      description="Random name generator")
+    async def random_name(self, ctx):
+        embed = self.make_error_embed(ctx)
+        response = await self.api_call("https://nekos.life/api/v2/name")
+        try:
+            rand_name = response["name"]
+        except KeyError:
+            logger.error(f"API error! Response:\n{response}")
+            embed.description = "API error occurred! :cry:"
+            await ctx.send(embed=embed)
+        else:
+            await ctx.message.reply(rand_name)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
