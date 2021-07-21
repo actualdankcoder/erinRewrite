@@ -128,6 +128,22 @@ class Fun(commands.Cog):
         else:
             await ctx.message.reply(embed=embed)
 
+    @commands.cooldown(1, 3, BucketType.user)
+    @commands.command(name="coffee",
+                      description="Shows a picture of coffee :smirk:")
+    async def coffee(self, ctx):
+        response = await self.api_call("https://coffee.alexflipnote.dev/random.json")
+        embed = self.make_embed(ctx)
+        embed.title = "Coffee! ☕"
+        try:
+            embed.set_image(url=response["file"])
+        except KeyError:
+            embed = self.make_error_embed(ctx)
+            embed.description = "API error occurred! :cry:"
+            await ctx.send(embed=embed)
+        else:
+            await ctx.message.reply(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
