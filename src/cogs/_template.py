@@ -4,6 +4,7 @@ from pathlib import Path
 
 from discord import Embed
 from discord.ext import commands
+from discord.ext.commands import BucketType
 from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase

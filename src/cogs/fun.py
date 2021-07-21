@@ -4,6 +4,7 @@ from pathlib import Path
 
 from discord import Embed, HTTPException
 from discord.ext import commands
+from discord.ext.commands import BucketType
 from dotenv import load_dotenv
 import aiohttp
 
@@ -75,7 +76,7 @@ class Fun(commands.Cog):
             async with session.get(url) as response:
                 return await response.json()
 
-    @commands.cooldown(5, 10, commands.BucketType.user)
+    @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="furrify", aliases=["furry", "uwu", "uwuify",
                                                "owo", "owoify"],
                       description="Makes youw text fuwwy uwu")
@@ -97,12 +98,36 @@ class Fun(commands.Cog):
             pass
         response = await self.api_call(f"https://nekos.life/api/v2/owoify?"
                                        f"text={msg}")
-        if "owo" in response:
-            await ctx.send(response["owo"])
-        else:
+        try:
+            uwu_text = response["owo"]
+        except KeyError:
             embed.description = "API ewwow occuwed :cry:"
             await ctx.send(embed=embed)
+        else:
+            await ctx.send(uwu_text)
+
+    @commands.cooldown(5, 10, BucketType.user)
+    @commands.command(name="8ball", aliases=["8_ball", "ball", "eightball",
+                                             "eight_ball"],
+                      description="Let the magic 8ball decide your fate 😈")
+    async def ball(self, ctx, *, question: str = ""):
+        embed = self.make_error_embed(ctx)
+        if len(question) == 0:
+            embed.description = "No question was provided!"
+            await ctx.send(embed=embed)
             return
+        embed = self.make_embed(ctx)
+        response = await self.api_call("https://nekos.life/api/v2/8ball")
+        embed.title = "8ball 🎱"
+        try:
+            embed.description = response["response"]
+            embed.set_thumbnail(url=response["url"])
+        except KeyError:
+            embed = self.make_error_embed(ctx)
+            embed.description = "API error occurred! :cry:"
+            await ctx.send(embed=embed)
+        else:
+            await ctx.message.reply(embed=embed)
 
 
 def setup(bot: commands.Bot):

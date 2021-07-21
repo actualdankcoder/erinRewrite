@@ -4,6 +4,7 @@ from pathlib import Path
 
 from discord import Embed
 from discord.ext import commands
+from discord.ext.commands import BucketType
 from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase
@@ -73,7 +74,7 @@ class Config(commands.Cog):
                                               "getprefixes", "get_prefixes"],
                     case_insensitive=True, description="Gets my prefix(es) "
                                                        "for this server!")
-    @commands.cooldown(10, 120, commands.BucketType.guild)
+    @commands.cooldown(10, 120, BucketType.guild)
     async def prefixes(self, ctx):
         embed = self.make_embed(ctx)
         embed.title = f"My prefixes for {ctx.message.guild}"
@@ -87,7 +88,7 @@ class Config(commands.Cog):
     @commands.group(name="prefix", aliases=["setprefix", "set_prefix"],
                     case_insensitive=True, description="Sets my prefix for "
                                                        "this server!")
-    @commands.cooldown(10, 120, commands.BucketType.guild)
+    @commands.cooldown(10, 120, BucketType.guild)
     @commands.has_permissions(manage_guild=True)
     async def prefix(self, ctx):
         if ctx.invoked_subcommand is None:
