@@ -2,9 +2,10 @@ import logging
 from os import getenv
 from pathlib import Path
 
-from discord import Embed
+from discord import Embed, HTTPException
 from discord.ext import commands
 from dotenv import load_dotenv
+import aiohttp
 
 from src.utils.bindings import AsyncErinDatabase
 from src.utils.create_logger import create_logger
@@ -37,16 +38,15 @@ db_uri = load_env_var("DATABASE_URI")
 erin_db = AsyncErinDatabase(URI=db_uri)
 
 
-# TODO: Rename cog
-class CogName(commands.Cog):
+class Fun(commands.Cog):
     """
-    TODO: Put description of cog here
+    What fun in this category
     """
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def make_embed(self, ctx) -> Embed:
+    def make_embed(self, ctx):
         embed = Embed(color=ctx.message.author.color,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -56,7 +56,7 @@ class CogName(commands.Cog):
         embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
         return embed
 
-    def make_error_embed(self, ctx) -> Embed:
+    def make_error_embed(self, ctx):
         embed = Embed(color=0xFF0000,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -70,6 +70,40 @@ class CogName(commands.Cog):
     async def on_ready(self):
         logger.info(f"\"{self.__class__.__name__}\" cog has been loaded")
 
+    async def api_call(self, url: str) -> dict:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                return await response.json()
+
+    @commands.cooldown(5, 10, commands.BucketType.user)
+    @commands.command(name="furrify", aliases=["furry", "uwu", "uwuify",
+                                               "owo", "owoify"],
+                      description="Makes youw text fuwwy uwu")
+    async def furrify(self, ctx, *, msg: str = ""):
+        embed = self.make_error_embed(ctx)
+        if len(msg) == 0:
+            embed.description = "NYo text pwovided to uwuify owo"
+            await ctx.send(embed=embed)
+            return
+        elif len(msg) > 200:
+            embed.description = f"Thewe's too much text owo\n" \
+                                f"(You passed iny {len(msg)} chawactews but " \
+                                f"the wimit is 200)"
+            await ctx.send(embed=embed)
+            return
+        try:
+            await ctx.message.delete()
+        except HTTPException:
+            pass
+        response = await self.api_call(f"https://nekos.life/api/v2/owoify?"
+                                       f"text={msg}")
+        if "owo" in response:
+            await ctx.send(response["owo"])
+        else:
+            embed.description = "API ewwow occuwed :cry:"
+            await ctx.send(embed=embed)
+            return
+
 
 def setup(bot: commands.Bot):
-    bot.add_cog(CogName(bot))
+    bot.add_cog(Fun(bot))
