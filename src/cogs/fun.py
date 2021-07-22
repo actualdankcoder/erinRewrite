@@ -221,6 +221,16 @@ class Fun(commands.Cog):
         embed.set_image(url=url)
         await ctx.message.reply(embed=embed)
 
+    @commands.cooldown(3, 7, BucketType.user)
+    @commands.command(name="waifu", description="Generates waifus")
+    async def waifu(self, ctx):
+        embed = self.make_embed(ctx)
+        response = await self.api_call("https://nekos.life/api/v2/img/waifu")
+        url = response["url"]
+        embed.title = "Here's a waifu for you:"
+        embed.set_image(url=url)
+        await ctx.message.reply(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
