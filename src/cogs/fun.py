@@ -205,6 +205,23 @@ class Fun(commands.Cog):
         else:
             await ctx.message.reply(embed=embed)
 
+    @commands.cooldown(1, 5, BucketType.user)
+    @commands.command(name="advice", description="Gives you some advice! "
+                                                 ":heart:")
+    async def advice(self, ctx):
+        response = await self.api_call("https://api.adviceslip.com/advice",
+                                       return_text=True)
+        response = load_json(response)
+        try:
+            advice = response["slip"]["advice"]
+        except KeyError:
+            logger.error(f"API error! Response:\n{response}")
+            embed = self.make_error_embed(ctx)
+            embed.description = "API error occurred! :cry:"
+            await ctx.send(embed=embed)
+        else:
+            await ctx.message.reply(advice)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
