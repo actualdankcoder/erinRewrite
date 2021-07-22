@@ -182,7 +182,7 @@ class Fun(commands.Cog):
             content = quotes[num]["text"]
             author = quotes[num]["author"]
         except KeyError:
-            logger.error(f"API error! Response:\n{self.quotes}")
+            logger.error(f"API error! Response:\n{quotes}")
             embed.description = "API error occurred! :cry:"
             await ctx.send(embed=embed)
         else:
