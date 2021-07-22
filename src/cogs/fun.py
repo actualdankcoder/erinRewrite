@@ -169,7 +169,7 @@ class Fun(commands.Cog):
         else:
             await ctx.message.reply(rand_name)
 
-    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="quote", description="Sends a quote")
     async def quote(self, ctx):
         embed = self.make_error_embed(ctx)
@@ -188,7 +188,7 @@ class Fun(commands.Cog):
         else:
             await ctx.message.reply(f"\"{content}\" - {author}")
 
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, BucketType.user)
     @commands.command(name="cat", aliases=["meow", "simba", "cats"],
                       description="Cats!!! ~~dogs are better~~")
     async def cat(self, ctx):
