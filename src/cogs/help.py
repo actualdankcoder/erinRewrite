@@ -5,6 +5,7 @@ from pathlib import Path
 import DiscordUtils
 from discord import Embed
 from discord.ext import commands
+from discord.ext.commands import BucketType
 from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase
@@ -58,6 +59,7 @@ class Help(commands.Cog):
     async def on_ready(self):
         logger.info(f"\"{self.__class__.__name__}\" cog has been loaded")
 
+    @commands.cooldown(3, 3, BucketType.user)
     @commands.command(hidden=True)
     async def help(self, ctx, *, sub_cmd: str = None):
         if "<@" in str(ctx.prefix) and ">" in str(ctx.prefix):
@@ -98,7 +100,7 @@ class Help(commands.Cog):
                 embed.add_field(name="Not belonging to a module",
                                 value=commands_desc,
                                 inline=False)
-            await ctx.send(embed=embed)
+            await ctx.message.reply(embed=embed)
             return
         else:
             if sub_cmd.lower() == "nsfw":
@@ -189,7 +191,7 @@ class Help(commands.Cog):
                         return await paginator.run(embeds)
             else:
                 embed = await self.make_error_embed(ctx, sub_cmd)
-                await ctx.send(embed=embed)
+                await ctx.message.reply(embed=embed)
                 return
 
 
