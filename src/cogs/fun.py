@@ -1,8 +1,8 @@
 import logging
+from json import loads as load_json
 from os import getenv
 from pathlib import Path
 from random import randint
-from json import loads as load_json
 from typing import Union
 
 import aiohttp
@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase
 from src.utils.create_logger import create_logger
-from src.utils.exceptions import *
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
@@ -173,6 +172,36 @@ class Fun(commands.Cog):
         response = load_json(response)
         advice = response["slip"]["advice"]
         await ctx.message.reply(advice)
+
+    @commands.cooldown(1, 5, BucketType.user)
+    @commands.command(name="mock", description="mOcK SoME tEXt")
+    async def mock(self, ctx, *, msg: str = ""):
+        embed = self.make_error_embed(ctx)
+        if len(msg) == 0:
+            embed.description = "Please pass in some text!"
+            await ctx.send(embed=embed)
+            return
+        banned = ['@here', '@everyone', '<@&', '<@!']
+        for word in banned:
+            if word in msg:
+                embed.description = "You can't ping with this command!"
+                await ctx.send(embed=embed)
+                return
+
+        def even_rand_bool():
+            last_true = 0
+            while True:
+                val = True if randint(min(last_true, 9), 10) > 5 else False
+                if val:
+                    last_true = 0
+                else:
+                    last_true += 1
+                yield val
+
+        new_msg = ""
+        for char in msg:
+            new_msg += char.upper() if next(even_rand_bool()) else char.lower()
+        await ctx.message.reply(new_msg)
 
 
 def setup(bot: commands.Bot):
