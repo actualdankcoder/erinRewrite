@@ -1,12 +1,15 @@
 import logging
 from os import getenv
 from pathlib import Path
+from random import randint
+from json import loads as load_json
+from typing import Union
 
+import aiohttp
 from discord import Embed, HTTPException
 from discord.ext import commands
 from discord.ext.commands import BucketType
 from dotenv import load_dotenv
-import aiohttp
 
 from src.utils.bindings import AsyncErinDatabase
 from src.utils.create_logger import create_logger
@@ -46,6 +49,7 @@ class Fun(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.quotes = None
 
     def make_embed(self, ctx):
         embed = Embed(color=ctx.message.author.color,
@@ -70,10 +74,14 @@ class Fun(commands.Cog):
     async def on_ready(self):
         logger.info(f"\"{self.__class__.__name__}\" cog has been loaded")
 
-    async def api_call(self, url: str) -> dict:
+    async def api_call(self, url: str,
+                       return_text: bool = False) -> Union[dict, str]:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
-                return await response.json()
+                if return_text:
+                    return await response.text()
+                else:
+                    return await response.json()
 
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="furrify", aliases=["furry", "uwu", "uwuify",
@@ -161,6 +169,26 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.message.reply(rand_name)
+
+    @commands.cooldown(3, 5, commands.BucketType.user)
+    @commands.command(name="quote", description="Sends a quote")
+    async def quote(self, ctx):
+        embed = self.make_error_embed(ctx)
+        if self.quotes is None:
+            self.quotes = load_json(
+                await self.api_call("https://type.fit/api/quotes",
+                                    return_text=True)
+            )
+        num = randint(1, len(self.quotes))
+        try:
+            content = self.quotes[num]["text"]
+            author = self.quotes[num]["author"]
+        except KeyError:
+            logger.error(f"API error! Response:\n{self.quotes}")
+            embed.description = "API error occurred! :cry:"
+            await ctx.send(embed=embed)
+        else:
+            await ctx.message.reply(f"\"{content}\" - {author}")
 
 
 def setup(bot: commands.Bot):
