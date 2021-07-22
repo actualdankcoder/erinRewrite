@@ -44,7 +44,7 @@ erin_db = AsyncErinDatabase(URI=db_uri)
 
 class Fun(commands.Cog):
     """
-    What fun in this category
+    What fun this category possess
     """
 
     def __init__(self, bot: commands.Bot):
@@ -104,14 +104,8 @@ class Fun(commands.Cog):
             pass
         response = await self.api_call(f"https://nekos.life/api/v2/owoify?"
                                        f"text={msg}")
-        try:
-            uwu_text = response["owo"]
-        except KeyError:
-            logger.error(f"API error! Response:\n{response}")
-            embed.description = "API ewwow occuwed :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(uwu_text)
+        uwu_text = response["owo"]
+        await ctx.send(uwu_text)
 
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="8ball", aliases=["8_ball", "ball", "eightball",
@@ -126,16 +120,9 @@ class Fun(commands.Cog):
         embed = self.make_embed(ctx)
         response = await self.api_call("https://nekos.life/api/v2/8ball")
         embed.title = "8ball 🎱"
-        try:
-            embed.description = response["response"]
-            embed.set_thumbnail(url=response["url"])
-        except KeyError:
-            logger.error(f"API error! Response:\n{response}")
-            embed = self.make_error_embed(ctx)
-            embed.description = "API error occurred! :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.message.reply(embed=embed)
+        embed.description = response["response"]
+        embed.set_thumbnail(url=response["url"])
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(1, 3, BucketType.user)
     @commands.command(name="coffee",
@@ -144,49 +131,28 @@ class Fun(commands.Cog):
         response = await self.api_call("https://coffee.alexflipnote.dev/random.json")
         embed = self.make_embed(ctx)
         embed.title = "Coffee! ☕"
-        try:
-            embed.set_image(url=response["file"])
-        except KeyError:
-            logger.error(f"API error! Response:\n{response}")
-            embed = self.make_error_embed(ctx)
-            embed.description = "API error occurred! :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.message.reply(embed=embed)
+        embed.set_image(url=response["file"])
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(1, 5, BucketType.user)
     @commands.command(name="randomname", aliases=["random_name"],
                       description="Random name generator")
     async def random_name(self, ctx):
-        embed = self.make_error_embed(ctx)
         response = await self.api_call("https://nekos.life/api/v2/name")
-        try:
-            rand_name = response["name"]
-        except KeyError:
-            logger.error(f"API error! Response:\n{response}")
-            embed.description = "API error occurred! :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.message.reply(rand_name)
+        rand_name = response["name"]
+        await ctx.message.reply(rand_name)
 
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="quote", description="Sends a quote")
     async def quote(self, ctx):
-        embed = self.make_error_embed(ctx)
         quotes = load_json(
             await self.api_call("https://type.fit/api/quotes",
                                 return_text=True)
         )
         num = randint(1, len(quotes))
-        try:
-            content = quotes[num]["text"]
-            author = quotes[num]["author"]
-        except KeyError:
-            logger.error(f"API error! Response:\n{quotes}")
-            embed.description = "API error occurred! :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.message.reply(f"\"{content}\" - {author}")
+        content = quotes[num]["text"]
+        author = quotes[num]["author"]
+        await ctx.message.reply(f"\"{content}\" - {author}")
 
     @commands.cooldown(1, 5, BucketType.user)
     @commands.command(name="cat", aliases=["meow", "simba", "cats"],
@@ -195,15 +161,8 @@ class Fun(commands.Cog):
         response = await self.api_call("http://aws.random.cat/meow")
         embed = self.make_embed(ctx)
         embed.title = "Catto!"
-        try:
-            embed.set_image(url=response["file"])
-        except KeyError:
-            logger.error(f"API error! Response:\n{response}")
-            embed = self.make_error_embed(ctx)
-            embed.description = "API error occurred! :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.message.reply(embed=embed)
+        embed.set_image(url=response["file"])
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(1, 5, BucketType.user)
     @commands.command(name="advice", description="Gives you some advice! "
@@ -212,15 +171,8 @@ class Fun(commands.Cog):
         response = await self.api_call("https://api.adviceslip.com/advice",
                                        return_text=True)
         response = load_json(response)
-        try:
-            advice = response["slip"]["advice"]
-        except KeyError:
-            logger.error(f"API error! Response:\n{response}")
-            embed = self.make_error_embed(ctx)
-            embed.description = "API error occurred! :cry:"
-            await ctx.send(embed=embed)
-        else:
-            await ctx.message.reply(advice)
+        advice = response["slip"]["advice"]
+        await ctx.message.reply(advice)
 
 
 def setup(bot: commands.Bot):
