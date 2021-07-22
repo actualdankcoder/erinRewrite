@@ -5,6 +5,7 @@ from typing import List
 
 import arrow
 import discord
+from discord import Embed
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -54,8 +55,33 @@ class ErinBot(commands.Bot):
         self.remove_command("help")
         self.startup_time = arrow.utcnow()
 
+    def make_error_embed(self, ctx) -> Embed:
+        embed = Embed(color=0xFF0000,
+                      timestamp=ctx.message.created_at)
+        embed.set_footer(text=ctx.message.author.display_name,
+                         icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.user.display_name,
+                         icon_url=self.user.avatar_url)
+        embed.title = f"Error!"
+        return embed
+
 
 erin = ErinBot()
+
+
+@erin.event
+async def on_command_error(ctx, error):
+    embed = erin.make_error_embed(ctx)
+    if isinstance(error, commands.errors.CommandOnCooldown):
+        embed.description = f"{error}"
+    elif isinstance(error, commands.errors.CommandInvokeError):
+        embed.description = "There was an error running this command! " \
+                            ":slight_frown:"
+        logger.error("There was an error running a command!\n"
+                     f"Context: {repr(ctx)}\n"
+                     f"Error: {repr(error)}")
+    await ctx.message.reply(embed=embed)
+
 
 # Load extensions
 logger.info("Loading extensions...")
