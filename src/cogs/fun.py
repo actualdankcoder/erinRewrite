@@ -210,6 +210,17 @@ class Fun(commands.Cog):
         fact = response["fact"]
         return await ctx.message.reply(fact)
 
+    @commands.cooldown(5, 7, BucketType.user)
+    @commands.command(name="goose", aliases=["geese"],
+                      description="Shows a picture of some geese")
+    async def goose(self, ctx):
+        embed = self.make_embed(ctx)
+        response = await self.api_call("https://nekos.life/api/v2/img/goose")
+        url = response["url"]
+        embed.title = "Geese!"
+        embed.set_image(url=url)
+        await ctx.message.reply(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
