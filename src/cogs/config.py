@@ -123,7 +123,7 @@ class Config(commands.Cog):
     async def remove(self, ctx, *, prefix: str = None):
         embed = self.make_error_embed(ctx)
         if not prefix:
-            embed.description = "Please mention a valid prefix to be remove!"
+            embed.description = "Please mention a valid prefix to be removed!"
             await ctx.message.reply(embed=embed)
             return
         try:
