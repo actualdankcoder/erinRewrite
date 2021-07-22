@@ -181,7 +181,7 @@ class Fun(commands.Cog):
             embed.description = "Please pass in some text!"
             await ctx.send(embed=embed)
             return
-        banned = ['@here', '@everyone', '<@&', '<@!']
+        banned = ["@here", "@everyone", "<@&", "<@!"]
         for word in banned:
             if word in msg:
                 embed.description = "You can't ping with this command!"
@@ -202,6 +202,13 @@ class Fun(commands.Cog):
         for char in msg:
             new_msg += char.upper() if next(even_rand_bool()) else char.lower()
         await ctx.message.reply(new_msg)
+
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="fact", description="Sends a fact")
+    async def fact(self, ctx):
+        response = await self.api_call("https://nekos.life/api/v2/fact")
+        fact = response["fact"]
+        return await ctx.message.reply(fact)
 
 
 def setup(bot: commands.Bot):
