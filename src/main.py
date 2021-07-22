@@ -1,6 +1,7 @@
 import logging
 from os import getenv
 from pathlib import Path
+from typing import List
 
 import arrow
 import discord
@@ -9,8 +10,6 @@ from dotenv import load_dotenv
 
 from utils.bindings import AsyncErinDatabase
 from utils.create_logger import create_logger
-
-from typing import List
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
