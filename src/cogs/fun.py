@@ -49,7 +49,6 @@ class Fun(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.quotes = None
 
     def make_embed(self, ctx):
         embed = Embed(color=ctx.message.author.color,
@@ -174,15 +173,14 @@ class Fun(commands.Cog):
     @commands.command(name="quote", description="Sends a quote")
     async def quote(self, ctx):
         embed = self.make_error_embed(ctx)
-        if self.quotes is None:
-            self.quotes = load_json(
-                await self.api_call("https://type.fit/api/quotes",
-                                    return_text=True)
-            )
-        num = randint(1, len(self.quotes))
+        quotes = load_json(
+            await self.api_call("https://type.fit/api/quotes",
+                                return_text=True)
+        )
+        num = randint(1, len(quotes))
         try:
-            content = self.quotes[num]["text"]
-            author = self.quotes[num]["author"]
+            content = quotes[num]["text"]
+            author = quotes[num]["author"]
         except KeyError:
             logger.error(f"API error! Response:\n{self.quotes}")
             embed.description = "API error occurred! :cry:"
