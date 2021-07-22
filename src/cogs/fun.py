@@ -188,6 +188,23 @@ class Fun(commands.Cog):
         else:
             await ctx.message.reply(f"\"{content}\" - {author}")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(name="cat", aliases=["meow", "simba", "cats"],
+                      description="Cats!!! ~~dogs are better~~")
+    async def cat(self, ctx):
+        response = await self.api_call("http://aws.random.cat/meow")
+        embed = self.make_embed(ctx)
+        embed.title = "Catto!"
+        try:
+            embed.set_image(url=response["file"])
+        except KeyError:
+            logger.error(f"API error! Response:\n{response}")
+            embed = self.make_error_embed(ctx)
+            embed.description = "API error occurred! :cry:"
+            await ctx.send(embed=embed)
+        else:
+            await ctx.message.reply(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
