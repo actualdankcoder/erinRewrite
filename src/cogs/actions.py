@@ -224,6 +224,24 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="baka",
+                      description="BAKA!!!")
+    async def baka(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply("Who's the baka??? (Mention it with the "
+                                    "command)")
+            return
+        bakas = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "**BAKA!!!***"
+        embed.description = f"{bakas}, ANTA BAKA?!?!?!?!?!?!"
+        response = await self.api_call("http://api.nekos.fun:8080/api/baka")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
