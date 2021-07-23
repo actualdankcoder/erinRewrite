@@ -97,6 +97,25 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="laugh",
+                      description="LMFAO <:KEKW:791927881319448606>")
+    async def laugh(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply(f"Mention someone you wanna laugh at in "
+                                    f"the command ;)")
+            return
+        laughed_at = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "AHAHAHAH!!"
+        embed.description = f"{ctx.author.mention} just laughed at " \
+                            f"{laughed_at}"
+        response = await self.api_call("http://api.nekos.fun:8080/api/laugh")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
