@@ -260,6 +260,18 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="smug",
+                      description="Smug moment "
+                                  "<:Davie_Smug:773399926650175488>")
+    async def smug(self, ctx):
+        embed = self.make_embed(ctx)
+        embed.title = f"{ctx.author.name} smugged"
+        response = await self.api_call("http://api.nekos.fun:8080/api/smug")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
