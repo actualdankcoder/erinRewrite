@@ -242,6 +242,24 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="feed",
+                      description="gib me food plz")
+    async def feed(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply("Who are you feeding? (Mention it with "
+                                    "the command)")
+            return
+        fed_users = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "Yummy"
+        embed.description = f"{ctx.author.mention} fed {fed_users}"
+        response = await self.api_call("http://api.nekos.fun:8080/api/feed")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
