@@ -145,6 +145,25 @@ class Action(commands.Cog):
         embed.set_image(url=url)
         await ctx.send(embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="cuddle",
+                      description="Cuddle someone "
+                                  "<a:pandaheart:828307130914177024>")
+    async def cuddle(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply(f"Mention someone you wanna cuddle with "
+                                    f"in the command ;)")
+            return
+        cuddled_with = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "aww cuddles uwu"
+        embed.description = f"{ctx.author.mention} just cuddled {cuddled_with}"
+        response = await self.api_call("http://api.nekos.fun:8080/api/cuddle")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
