@@ -295,6 +295,28 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="tickle",
+                      description="Tickle someone!")
+    async def tickle(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply(f"Mention someone you wanna tickle in the "
+                                    f"command ;)")
+            return
+        if user == ctx.author:
+            await ctx.message.reply("Imagine tickling yourself...")
+            return
+        slapped_users = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "Tickle, tickle!"
+        embed.description = f"{ctx.author.mention} tickled " \
+                            f"{slapped_users}"
+        response = await self.api_call("http://api.nekos.fun:8080/api/tickle")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
