@@ -203,6 +203,27 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="poke",
+                      description="Poke people!!!")
+    async def poke(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply(f"Mention someone you wanna poke in the "
+                                    f"command ;)")
+            return
+        if user == ctx.author:
+            await ctx.message.reply("Imagine poking yourself...")
+            return
+        poked_users = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "***poke poke***"
+        embed.description = f"{ctx.author.mention} just poked {poked_users}"
+        response = await self.api_call("http://api.nekos.fun:8080/api/poke")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
