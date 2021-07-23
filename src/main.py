@@ -1,4 +1,5 @@
 import logging
+from difflib import get_close_matches
 from os import getenv
 from pathlib import Path
 from typing import List
@@ -78,6 +79,28 @@ async def on_command_error(ctx, error):
         embed.description = "There was an error running this command! " \
                             ":slight_frown:"
         logger.error("There was an error running a command!\n"
+                     f"Context: {repr(ctx)}\n"
+                     f"Error: {repr(error)}")
+    elif isinstance(error, commands.errors.CommandNotFound):
+        prefixes = await erin_db.get_prefix(ctx.message.guild.id)
+        command = ctx.message.content
+        all_commands = list(erin.all_commands.keys())
+        for prefix in prefixes:
+            try:
+                if command.index(prefix) == 0:
+                    command = command[len(prefix):]
+                    break
+            except ValueError:
+                pass
+        closest = get_close_matches(command, all_commands, n=1)
+        if len(closest) == 0:
+            closest = ""
+        else:
+            closest = f"Did you mean `{closest[0]}`?"
+        embed.description = f"\"{command}\" isn't a command! {closest}"
+    else:
+        embed.description = "An unknown error has occurred! :slight_frown:"
+        logger.error("An unknown error has occurred!\n"
                      f"Context: {repr(ctx)}\n"
                      f"Error: {repr(error)}")
     await ctx.message.reply(embed=embed)
