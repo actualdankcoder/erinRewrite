@@ -164,6 +164,24 @@ class Action(commands.Cog):
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
 
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="kiss",
+                      description="OwO kiss someone :flushed:")
+    async def kiss(self, ctx, user: commands.Greedy[discord.Member] = None):
+        if user is None:
+            await ctx.message.reply(f"Mention someone you wanna kiss in the "
+                                    f"command ;)")
+            return
+        kissed_users = "".join(f"{users.mention} " for users in user)
+        embed = self.make_embed(ctx)
+        embed.title = "<a:nekokissr:820991965217816607>" * 2
+        embed.description = f"{ctx.author.mention} just kissed {kissed_users}"
+        response = await self.api_call("http://api.nekos.fun:8080/api/kiss")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(" ".join([users.mention for users in user]),
+                       embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Action(bot))
