@@ -1,4 +1,5 @@
 import logging
+from difflib import get_close_matches
 from os import getenv
 from pathlib import Path
 
@@ -47,10 +48,16 @@ class Help(commands.Cog):
         self.bot = bot
 
     async def make_error_embed(self, ctx, name):
+        all_cogs = [c.lower() for c in self.bot.cogs]
+        closest = get_close_matches(name.lower(), all_cogs, n=1)
+        if len(closest) == 0:
+            closest = ""
+        else:
+            closest = f" - did you mean `{closest[0].title()}`?"
         emb = Embed(
             title="lol, sadphroge \N{PENSIVE FACE}\N{PENSIVE FACE}"
                   "\N{PENSIVE FACE}",
-            description=f"ERROR 404 couldn't find `{name}` module",
+            description=f"ERROR 404 couldn't find `{name}` module{closest}",
             color=ctx.message.author.color,
         )
         return emb
