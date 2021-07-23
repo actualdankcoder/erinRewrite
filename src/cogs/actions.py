@@ -119,7 +119,7 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="lick",
                       description="<a:lick:828297410458550322>")
-    async def laugh(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def lick(self, ctx, user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna lick in "
                                     f"the command ;)")
@@ -133,6 +133,17 @@ class Action(commands.Cog):
         embed.set_image(url=url)
         await ctx.send(" ".join([users.mention for users in user]),
                        embed=embed)
+
+    @commands.cooldown(3, 5, BucketType.user)
+    @commands.command(name="cry",
+                      description=":pensize: :(")
+    async def cry(self, ctx):
+        embed = self.make_embed(ctx)
+        embed.title = "<a:KannaCry:822716843440734218>" * 3
+        response = await self.api_call("http://api.nekos.fun:8080/api/cry")
+        url = response["image"]
+        embed.set_image(url=url)
+        await ctx.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
