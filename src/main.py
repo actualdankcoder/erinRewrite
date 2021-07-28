@@ -84,7 +84,11 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.errors.CommandNotFound):
         prefixes = await erin_db.get_prefix(ctx.message.guild.id)
         command = ctx.message.content
-        all_commands = list(erin.all_commands.keys())
+        all_commands = []
+        for cmd, obj in erin.all_commands.items():
+            if not ctx.channel.is_nsfw() and obj.cog_name.lower() == "nsfw":
+                continue
+            all_commands.append(cmd)
         for prefix in prefixes:
             try:
                 if command.index(prefix) == 0:
