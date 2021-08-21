@@ -48,7 +48,7 @@ class Action(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def make_embed(self, ctx) -> Embed:
+    def make_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=ctx.message.author.color,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -57,7 +57,7 @@ class Action(commands.Cog):
                          icon_url=self.bot.user.avatar_url)
         return embed
 
-    def make_error_embed(self, ctx) -> Embed:
+    def make_error_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=0xFF0000,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -82,7 +82,8 @@ class Action(commands.Cog):
 
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="hug", description="Hug someone UwU")
-    async def hug(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def hug(self, ctx: commands.Context,
+                  user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna hug in the "
                                     f"command ;)")
@@ -100,7 +101,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="laugh",
                       description="LMFAO <:KEKW:791927881319448606>")
-    async def laugh(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def laugh(self, ctx: commands.Context,
+                    user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna laugh at in "
                                     f"the command ;)")
@@ -119,7 +121,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="lick",
                       description="<a:lick:828297410458550322>")
-    async def lick(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def lick(self, ctx: commands.Context,
+                   user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna lick in "
                                     f"the command ;)")
@@ -137,7 +140,7 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="cry",
                       description=":pensize: :(")
-    async def cry(self, ctx):
+    async def cry(self, ctx: commands.Context):
         embed = self.make_embed(ctx)
         embed.title = "<a:KannaCry:822716843440734218>" * 3
         response = await self.api_call("http://api.nekos.fun:8080/api/cry")
@@ -149,7 +152,8 @@ class Action(commands.Cog):
     @commands.command(name="cuddle",
                       description="Cuddle someone "
                                   "<a:pandaheart:828307130914177024>")
-    async def cuddle(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def cuddle(self, ctx: commands.Context,
+                     user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna cuddle with "
                                     f"in the command ;)")
@@ -167,7 +171,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="kiss",
                       description="OwO kiss someone :flushed:")
-    async def kiss(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def kiss(self, ctx: commands.Context,
+                   user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna kiss in the "
                                     f"command ;)")
@@ -185,7 +190,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="pat",
                       description="Pat someone <:worrypat:828215349710684170>")
-    async def pat(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def pat(self, ctx: commands.Context,
+                  user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna pat in the "
                                     f"command ;)")
@@ -206,7 +212,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="poke",
                       description="Poke people!!!")
-    async def poke(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def poke(self, ctx: commands.Context,
+                   user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna poke in the "
                                     f"command ;)")
@@ -227,7 +234,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="baka",
                       description="BAKA!!!")
-    async def baka(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def baka(self, ctx: commands.Context,
+                   user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply("Who's the baka??? (Mention it with the "
                                     "command)")
@@ -245,7 +253,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="feed",
                       description="gib me food plz")
-    async def feed(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def feed(self, ctx: commands.Context,
+                   user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply("Who are you feeding? (Mention it with "
                                     "the command)")
@@ -264,7 +273,7 @@ class Action(commands.Cog):
     @commands.command(name="smug",
                       description="Smug moment "
                                   "<:Davie_Smug:773399926650175488>")
-    async def smug(self, ctx):
+    async def smug(self, ctx: commands.Context):
         embed = self.make_embed(ctx)
         embed.title = f"{ctx.author.name} smugged"
         response = await self.api_call("http://api.nekos.fun:8080/api/smug")
@@ -276,7 +285,8 @@ class Action(commands.Cog):
     @commands.command(name="slap",
                       description="Bitch slap moment "
                                   "<:slap:500660862110138369>")
-    async def slap(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def slap(self, ctx: commands.Context,
+                   user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna slap in the "
                                     f"command ;)")
@@ -298,7 +308,8 @@ class Action(commands.Cog):
     @commands.cooldown(3, 5, BucketType.user)
     @commands.command(name="tickle",
                       description="Tickle someone!")
-    async def tickle(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def tickle(self, ctx: commands.Context,
+                     user: commands.Greedy[discord.Member] = None):
         if user is None:
             await ctx.message.reply(f"Mention someone you wanna tickle in the "
                                     f"command ;)")

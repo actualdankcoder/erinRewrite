@@ -47,7 +47,7 @@ class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def make_error_embed(self, ctx, name):
+    async def make_error_embed(self, ctx: commands.Context, name: str):
         all_cogs = [c.lower() for c in self.bot.cogs]
         closest = get_close_matches(name.lower(), all_cogs, n=1)
         if len(closest) == 0:
@@ -68,7 +68,7 @@ class Help(commands.Cog):
 
     @commands.cooldown(3, 3, BucketType.user)
     @commands.command(hidden=True)
-    async def help(self, ctx, *, sub_cmd: str = None):
+    async def help(self, ctx: commands.Context, sub_cmd: str = None):
         if "<@" in str(ctx.prefix) and ">" in str(ctx.prefix):
             ctx.prefix = f"@{str(self.bot.user).split('#')[0]} "
         if not sub_cmd:

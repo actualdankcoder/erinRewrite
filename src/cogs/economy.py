@@ -50,7 +50,7 @@ class Economy(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def make_embed(self, ctx) -> Embed:
+    def make_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=ctx.message.author.color,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -59,7 +59,7 @@ class Economy(commands.Cog):
                          icon_url=self.bot.user.avatar_url)
         return embed
 
-    def make_error_embed(self, ctx) -> Embed:
+    def make_error_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=0xFF0000,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -72,7 +72,7 @@ class Economy(commands.Cog):
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="balance", aliases=["bal", "$"],
                       description=f"Check how much {CURRENCY_NAME} you have!")
-    async def balance(self, ctx, user: discord.User = None):
+    async def balance(self, ctx: commands.Context, user: discord.Member = None):
         embed = self.make_embed(ctx)
         if user is None:
             user = ctx.author

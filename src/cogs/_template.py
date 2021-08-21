@@ -47,7 +47,7 @@ class CogName(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def make_embed(self, ctx) -> Embed:
+    def make_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=ctx.message.author.color,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -56,7 +56,7 @@ class CogName(commands.Cog):
                          icon_url=self.bot.user.avatar_url)
         return embed
 
-    def make_error_embed(self, ctx) -> Embed:
+    def make_error_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=0xFF0000,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,

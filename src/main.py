@@ -56,7 +56,7 @@ class ErinBot(commands.Bot):
         self.remove_command("help")
         self.startup_time = arrow.utcnow()
 
-    def make_error_embed(self, ctx) -> Embed:
+    def make_error_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=0xFF0000,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,

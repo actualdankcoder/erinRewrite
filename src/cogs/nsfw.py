@@ -270,7 +270,7 @@ class NSFW(commands.Cog):
 
     @commands.cooldown(5, 7, BucketType.user)
     @commands.command(name="spank", description="Oooof!")
-    async def spank(self, ctx, user: commands.Greedy[discord.Member] = None):
+    async def spank(self, ctx: commands.Context, user: commands.Greedy[discord.Member] = None):
         if not ctx.channel.is_nsfw():
             await ctx.message.reply("this command can only be used in a NSFW "
                                     "channel.")

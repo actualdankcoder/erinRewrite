@@ -46,7 +46,7 @@ class Config(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def make_embed(self, ctx) -> Embed:
+    def make_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=ctx.message.author.color,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -55,7 +55,7 @@ class Config(commands.Cog):
                          icon_url=self.bot.user.avatar_url)
         return embed
 
-    def make_error_embed(self, ctx) -> Embed:
+    def make_error_embed(self, ctx: commands.Context) -> Embed:
         embed = Embed(color=0xFF0000,
                       timestamp=ctx.message.created_at)
         embed.set_footer(text=ctx.message.author.display_name,
@@ -74,7 +74,7 @@ class Config(commands.Cog):
                     case_insensitive=True, description="Gets my prefix(es) "
                                                        "for this server!")
     @commands.cooldown(10, 120, BucketType.guild)
-    async def prefixes(self, ctx):
+    async def prefixes(self, ctx: commands.Context):
         embed = self.make_embed(ctx)
         embed.set_thumbnail(url=str(ctx.message.guild.icon_url))
         embed.title = f"My prefixes for {ctx.message.guild}"
@@ -90,7 +90,7 @@ class Config(commands.Cog):
                                                        "this server!")
     @commands.cooldown(10, 120, BucketType.guild)
     @commands.has_permissions(manage_guild=True)
-    async def prefix(self, ctx):
+    async def prefix(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             embed = self.make_error_embed(ctx)
             embed.description = "Please mention a sub-command such as " \
@@ -99,7 +99,7 @@ class Config(commands.Cog):
 
     @prefix.command()
     @commands.has_permissions(manage_guild=True)
-    async def add(self, ctx, *, prefix: str = None):
+    async def add(self, ctx: commands.Context, prefix: str = None):
         embed = self.make_error_embed(ctx)
         if not prefix:
             embed.description = "Please mention a valid prefix to be added!"
@@ -120,7 +120,7 @@ class Config(commands.Cog):
 
     @prefix.command()
     @commands.has_permissions(manage_guild=True)
-    async def remove(self, ctx, *, prefix: str = None):
+    async def remove(self, ctx: commands.Context, prefix: str = None):
         embed = self.make_error_embed(ctx)
         if not prefix:
             embed.description = "Please mention a valid prefix to be removed!"

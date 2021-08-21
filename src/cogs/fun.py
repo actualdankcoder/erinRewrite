@@ -85,7 +85,7 @@ class Fun(commands.Cog):
     @commands.command(name="furrify", aliases=["furry", "uwu", "uwuify",
                                                "owo", "owoify"],
                       description="Makes youw text fuwwy uwu")
-    async def furrify(self, ctx, *, msg: str = ""):
+    async def furrify(self, ctx: commands.Context, msg: str = ""):
         embed = self.make_error_embed(ctx)
         if len(msg) == 0:
             embed.description = "NYo text pwovided to uwuify owo"
@@ -110,7 +110,7 @@ class Fun(commands.Cog):
     @commands.command(name="8ball", aliases=["8_ball", "ball", "eightball",
                                              "eight_ball"],
                       description="Let the magic 8ball decide your fate 😈")
-    async def ball(self, ctx, *, question: str = ""):
+    async def ball(self, ctx: commands.Context, question: str = ""):
         embed = self.make_error_embed(ctx)
         if len(question) == 0:
             embed.description = "No question was provided!"
@@ -175,7 +175,7 @@ class Fun(commands.Cog):
 
     @commands.cooldown(1, 5, BucketType.user)
     @commands.command(name="mock", description="mOcK SoME tEXt")
-    async def mock(self, ctx, *, msg: str = ""):
+    async def mock(self, ctx: commands.Context, msg: str = ""):
         embed = self.make_error_embed(ctx)
         if len(msg) == 0:
             embed.description = "Please pass in some text!"
