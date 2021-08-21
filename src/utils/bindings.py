@@ -24,7 +24,8 @@ ALLOWED_PREFIXES = list(ascii_letters + digits + punctuation)
 
 def get_blank_user_template() -> dict:
     user_template = {
-        "id": None
+        "id": None,
+        "balance": 0,
     }
     return user_template.copy()
 
