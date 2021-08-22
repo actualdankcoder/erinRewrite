@@ -2,6 +2,7 @@ import logging
 from os import getenv
 from pathlib import Path
 
+import arrow
 import discord.ext.commands
 from discord import Embed
 from discord.ext import commands
@@ -24,6 +25,10 @@ load_dotenv(dotenv_path=env_path)
 
 
 CURRENCY_NAME = "Erin"
+
+HOURLY_CLAIM = 100
+DAILY_CLAIM = 1000
+MONTHLY_CLAIM = 10_000
 
 
 def load_env_var(var_name: str) -> str:
@@ -62,6 +67,32 @@ class Economy(ErinCog):
         user_doc = await erin_db.get_user(str(user.id))
         user_balance = user_doc["balance"]
         embed.description += f"{user.mention} has {user_balance} {CURRENCY_NAME}\n"
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(5, 10, BucketType.user)
+    @commands.command(name="hourly",
+                      description=f"Claim some {CURRENCY_NAME} every hour!")
+    async def hourly(self, ctx: commands.Context):
+        user_doc = await erin_db.get_user(str(ctx.author.id))
+        user_claims = user_doc["last_claim"]
+        last_claim = user_claims["hourly"]
+        one_hr_ago = arrow.utcnow().shift(hours=-1).timestamp()
+        if one_hr_ago >= last_claim:
+            user_doc["balance"] += HOURLY_CLAIM
+            user_claims["hourly"] = arrow.utcnow().timestamp()
+            await erin_db.set_user(str(ctx.author.id), user_doc)
+            embed = self.make_embed(ctx)
+            embed.description = f"{ctx.author.mention} you claimed your " \
+                                f"hourly and got " \
+                                f"{HOURLY_CLAIM} {CURRENCY_NAME}! You can " \
+                                f"claim again in 1 hour."
+        else:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            can_get_in = arrow.get(last_claim).shift(hours=1)
+            embed.description = f"{ctx.author.mention} you already claimed " \
+                                f"your hourly reward. You can get it again " \
+                                f"in {can_get_in.humanize(only_distance=True)}"
         await ctx.send(embed=embed)
 
 

@@ -1,13 +1,14 @@
 import logging
+from string import ascii_letters, digits, punctuation
 from typing import List
 
+import arrow
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.utils.cacher import CacheManger
 from src.utils.create_logger import create_logger
-from src.utils.singleton import Singleton
 from src.utils.exceptions import *
-from string import ascii_letters, digits, punctuation
+from src.utils.singleton import Singleton
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
@@ -26,6 +27,11 @@ def get_blank_user_template() -> dict:
     user_template = {
         "id": None,
         "balance": 0,
+        "last_claim": {
+            "hourly": 0,
+            "daily": 0,
+            "monthly": arrow.utcnow().timestamp()
+        }
     }
     return user_template.copy()
 
