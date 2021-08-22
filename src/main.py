@@ -71,7 +71,7 @@ erin = ErinBot()
 
 
 @erin.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: commands.Context, error):
     embed = erin.make_error_embed(ctx)
     if isinstance(error, commands.errors.CommandOnCooldown):
         embed.description = f"{error}"

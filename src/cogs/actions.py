@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase
 from src.utils.create_logger import create_logger
+from src.utils.ErinCog import ErinCog
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
@@ -40,36 +41,10 @@ db_uri = load_env_var("DATABASE_URI")
 erin_db = AsyncErinDatabase(URI=db_uri)
 
 
-class Action(commands.Cog):
+class Action(ErinCog):
     """
     Action commands such as lick, hug, and kiss
     """
-
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-
-    def make_embed(self, ctx: commands.Context) -> Embed:
-        embed = Embed(color=ctx.message.author.color,
-                      timestamp=ctx.message.created_at)
-        embed.set_footer(text=ctx.message.author.display_name,
-                         icon_url=ctx.message.author.avatar_url)
-        embed.set_author(name=self.bot.user.display_name,
-                         icon_url=self.bot.user.avatar_url)
-        return embed
-
-    def make_error_embed(self, ctx: commands.Context) -> Embed:
-        embed = Embed(color=0xFF0000,
-                      timestamp=ctx.message.created_at)
-        embed.set_footer(text=ctx.message.author.display_name,
-                         icon_url=ctx.message.author.avatar_url)
-        embed.set_author(name=self.bot.user.display_name,
-                         icon_url=self.bot.user.avatar_url)
-        embed.title = f"Error!"
-        return embed
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        logger.info(f"\"{self.__class__.__name__}\" cog has been loaded")
 
     async def api_call(self, url: str,
                        return_text: bool = False) -> Union[dict, str]:

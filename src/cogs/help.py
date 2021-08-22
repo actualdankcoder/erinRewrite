@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 from src.utils.bindings import AsyncErinDatabase
 from src.utils.create_logger import create_logger
+from src.utils.ErinCog import ErinCog
 
 # Configure logger
 logger = create_logger(name=__file__, level=logging.DEBUG)
@@ -39,13 +40,10 @@ db_uri = load_env_var("DATABASE_URI")
 erin_db = AsyncErinDatabase(URI=db_uri)
 
 
-class Help(commands.Cog):
+class Help(ErinCog):
     """
     The help cog
     """
-
-    def __init__(self, bot):
-        self.bot = bot
 
     async def make_error_embed(self, ctx: commands.Context, name: str):
         all_cogs = [c.lower() for c in self.bot.cogs]
@@ -61,10 +59,6 @@ class Help(commands.Cog):
             color=ctx.message.author.color,
         )
         return emb
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        logger.info(f"\"{self.__class__.__name__}\" cog has been loaded")
 
     @commands.cooldown(3, 3, BucketType.user)
     @commands.command(hidden=True)
