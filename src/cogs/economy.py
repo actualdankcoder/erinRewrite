@@ -55,12 +55,13 @@ class Economy(ErinCog):
                       user: commands.Greedy[discord.Member] = None):
         embed = self.make_embed(ctx)
         if user is None:
-            user = [ctx.author]
+            user = ctx.author
+        else:
+            user = user[0]
         embed.description = ""
-        for users in user:
-            user_doc = await erin_db.get_user(str(users.id))
-            user_balance = user_doc["balance"]
-            embed.description += f"{users.mention} has {user_balance} {CURRENCY_NAME}\n"
+        user_doc = await erin_db.get_user(str(user.id))
+        user_balance = user_doc["balance"]
+        embed.description += f"{user.mention} has {user_balance} {CURRENCY_NAME}\n"
         await ctx.send(embed=embed)
 
 

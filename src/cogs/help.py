@@ -4,6 +4,7 @@ from os import getenv
 from pathlib import Path
 
 import DiscordUtils
+import discord
 from discord import Embed
 from discord.ext import commands
 from discord.ext.commands import BucketType
@@ -56,7 +57,7 @@ class Help(ErinCog):
             title="lol, sadphroge \N{PENSIVE FACE}\N{PENSIVE FACE}"
                   "\N{PENSIVE FACE}",
             description=f"ERROR 404 couldn't find `{name}` module{closest}",
-            color=ctx.message.author.color,
+            color=0xFF0000,
         )
         return emb
 
