@@ -107,9 +107,10 @@ class Help(ErinCog):
         else:
             if sub_cmd.lower() == "nsfw":
                 if not ctx.channel.is_nsfw():
-                    return await ctx.send("Ehhhh this commands works in NSFW "
-                                          "channels only "
-                                          "<a:awkwardkid:843361776619618304>")
+                    return await ctx.message.reply("Ehhhh this commands "
+                                                   "works in NSFW channels "
+                                                   "only "
+                                                   "<a:awkwardkid:843361776619618304>")
 
             def make_embed():
                 embed = Embed(color=ctx.message.author.color,
@@ -166,10 +167,10 @@ class Help(ErinCog):
 
                     if i == 0:
                         embed = await self.make_error_embed(ctx, sub_cmd)
-                        await ctx.send(embed=embed)
+                        await ctx.message.reply(embed=embed)
                         return
                     if len(embeds) == 1:
-                        await ctx.send(embed=embeds[0])
+                        await ctx.message.reply(embed=embeds[0])
                         return
                     else:
                         paginator = DiscordUtils.Pagination.CustomEmbedPaginator(
