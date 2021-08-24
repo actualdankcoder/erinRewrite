@@ -75,12 +75,27 @@ async def on_command_error(ctx: commands.Context, error):
     embed = erin.make_error_embed(ctx)
     if isinstance(error, commands.errors.CommandOnCooldown):
         embed.description = f"{error}"
-    elif isinstance(error, commands.errors.CommandInvokeError):
-        embed.description = "There was an error running this command! " \
-                            ":slight_frown:"
-        logger.error("There was an error running a command!\n"
-                     f"Context: {repr(ctx)}\n"
-                     f"Error: {repr(error)}")
+    elif isinstance(error, discord.errors.Forbidden):
+        embed.description = "Bot has insufficient permissions to perform " \
+                            "this action \N{CROSS MARK}"
+        if error.text is not None:
+            embed.add_field(name="Error reason:", value=error.text)
+        if error.code is not None:
+            embed.add_field(name="Error code:", value=f"{error.code} "
+                                                      f"Forbidden")
+        if error.status is not None:
+            embed.add_field(name="Error status:", value=str(error.status))
+    elif isinstance(error, commands.errors.MissingPermissions):
+        embed.description = "Missing permissions \N{CROSS MARK}\n"
+        for perms in error.missing_perms:
+            missing_perm = str(perms).replace("_", " ").capitalize()
+            embed.description += f"\n**{missing_perm}**"
+    elif isinstance(error, commands.errors.MissingRequiredArgument):
+        embed.description = f"You didn't pass in the required argument(s)\n\n" \
+                            f"`{ctx.prefix}{ctx.command.name} " \
+                            f"{ctx.command.signature}`\n\n" \
+                            f"<> Denotes required argument. " \
+                            f"[] Denotes optional argument"
     elif isinstance(error, commands.errors.CommandNotFound):
         prefixes = await erin_db.get_prefix(ctx.message.guild.id)
         command = ctx.message.content
@@ -102,6 +117,52 @@ async def on_command_error(ctx: commands.Context, error):
         else:
             closest = f"Did you mean `{closest[0]}`?"
         embed.description = f"\"{command}\" isn't a command! {closest}"
+    elif isinstance(error, commands.errors.MemberNotFound):
+        embed.description = "Could not find the specified member!"
+    elif isinstance(error, commands.errors.BadArgument):
+        embed.description = "Invalid argument(s) \N{CROSS MARK}\n"
+        invalid = ""
+        for bad in error.args:
+            invalid += f"{bad}\n"
+        embed.description += f"\n**{invalid}**\n" \
+                             f"Correct command usage: " \
+                             f"`{ctx.prefix+ctx.command.name} " \
+                             f"{ctx.command.signature}`"
+    elif isinstance(error, commands.errors.NoPrivateMessage):
+        embed.description = f"`{ctx.prefix}{ctx.command.name}` " \
+                            f"does not work in private messages."
+    elif isinstance(error, commands.errors.CheckFailure):
+        embed.description = "One of the checks failed to validate."
+    elif isinstance(error, commands.errors.DisabledCommand):
+        embed.description = "This command has been disabled."
+    elif isinstance(error, commands.errors.TooManyArguments):
+        embed.description = "More than required arguments were passed into " \
+                            "this command."
+    elif isinstance(error, commands.errors.NotOwner):
+        embed.description = "Only the owner can use this command."
+    elif isinstance(error, commands.errors.MessageNotFound):
+        embed.description = "Couldn't find the requested message."
+    elif isinstance(error, commands.errors.UserNotFound):
+        embed.description = "Couldn't find the requested user."
+    elif isinstance(error, (commands.errors.MissingRole,
+                            commands.errors.MissingAnyRole)):
+        embed.description = "You do not have the requested role for this command."
+    elif isinstance(error, commands.errors.BotMissingPermissions):
+        embed.description = "I do not have the permissions to execute the " \
+                            "action."
+        missing_perms = ""
+        for perms in error.missing_perms:
+            missing = str(perms).replace("_", " ").capitalize()
+            missing_perms += f"{missing}\n"
+        embed.add_field(name="Missing perms:", value=missing_perms)
+    elif isinstance(error, commands.errors.NSFWChannelRequired):
+        embed.description = "Command can only be executed in NSFW channels."
+    elif isinstance(error, commands.errors.CommandInvokeError):
+        embed.description = "There was an error running this command! " \
+                            ":slight_frown:"
+        logger.error("There was an error running a command!\n"
+                     f"Context: {repr(ctx)}\n"
+                     f"Error: {repr(error)}")
     else:
         embed.description = "An unknown error has occurred! :slight_frown:"
         logger.error("An unknown error has occurred!\n"

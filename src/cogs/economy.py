@@ -1,5 +1,6 @@
 import logging
 from os import getenv
+from random import randint
 from pathlib import Path
 
 import arrow
@@ -29,6 +30,16 @@ CURRENCY_NAME = "Erin"
 HOURLY_CLAIM = 100
 DAILY_CLAIM = 1000
 MONTHLY_CLAIM = 10_000
+
+BET_COIN_FLIP_CHANCE = 40
+BET_COIN_FLIP_REWARD = 1.75
+BET_DICE_ROLL_CHANCE = 10
+BET_DICE_ROLL_REWARD = 2.5
+
+
+def random_chance(chance: int) -> bool:
+    assert chance >= 0 and chance <= 100
+    return randint(1, 100) <= chance
 
 
 def load_env_var(var_name: str) -> str:
@@ -93,7 +104,7 @@ class Economy(ErinCog):
             embed.description = f"{ctx.author.mention} you already claimed " \
                                 f"your hourly reward. You can get it again " \
                                 f"in {can_get_in.humanize(only_distance=True)}"
-        await ctx.send(embed=embed)
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="daily",
@@ -119,7 +130,7 @@ class Economy(ErinCog):
             embed.description = f"{ctx.author.mention} you already claimed " \
                                 f"your daily reward. You can get it again " \
                                 f"in {can_get_in.humanize(only_distance=True)}"
-        await ctx.send(embed=embed)
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="monthly",
@@ -145,7 +156,54 @@ class Economy(ErinCog):
             embed.description = f"{ctx.author.mention} you already claimed " \
                                 f"your monthly reward. You can get it again " \
                                 f"in {can_get_in.humanize(only_distance=True)}"
-        await ctx.send(embed=embed)
+        await ctx.message.reply(embed=embed)
+
+    @commands.cooldown(5, 10, BucketType.user)
+    @commands.command(name="betcoinflip", aliases=["bet_coin_flip", "betflip",
+                                                   "bet_flip", "coinflip",
+                                                   "coin_flip", "betcoin",
+                                                   "bet_coin", "bcf", "bf"],
+                      description=f"Bet some {CURRENCY_NAME} on a coin flip!")
+    async def bet_coin_flip(self, ctx: commands.Context, amount: int,
+                            side: str):
+        user_doc = await erin_db.get_user(str(ctx.author.id))
+        user_balance = user_doc["balance"]
+        if amount < 1:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            embed.description = f"{ctx.author.mention} you cannot bet " \
+                                f"less then 1 {CURRENCY_NAME}!"
+            await ctx.message.reply(embed=embed)
+            return
+        elif amount > user_balance:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            embed.description = f"{ctx.author.mention} you cannot bet more " \
+                                f"then you have!"
+            await ctx.message.reply(embed=embed)
+            return
+        else:
+            embed = self.make_embed(ctx)
+            side = side.replace(" ", "").lower()
+            if side in ("heads", "h"):
+                side = "heads"
+            elif side in ("tails", "t"):
+                side = "tails"
+            else:
+                raise commands.errors.BadArgument("side is not either "
+                                                  "\"heads\" or \"tails\"!")
+            if random_chance(BET_COIN_FLIP_CHANCE):
+                reward = round(amount * BET_COIN_FLIP_REWARD)
+                user_doc["balance"] += reward
+                embed.description = f"{ctx.author.mention} it was {side}! " \
+                                    f"You win {reward} {CURRENCY_NAME}."
+            else:
+                user_doc["balance"] -= amount
+                embed.description = f"{ctx.author.mention} better luck next " \
+                                    f"time - it was " \
+                                    f"{'tails' if side == 'heads' else 'heads'}"
+            await erin_db.set_user(str(ctx.author.id), user_doc)
+            await ctx.message.reply(embed=embed)
 
 
 def setup(bot: commands.Bot):
