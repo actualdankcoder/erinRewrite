@@ -95,6 +95,32 @@ class Economy(ErinCog):
                                 f"in {can_get_in.humanize(only_distance=True)}"
         await ctx.send(embed=embed)
 
+    @commands.cooldown(5, 10, BucketType.user)
+    @commands.command(name="daily",
+                      description=f"Claim some {CURRENCY_NAME} every day!")
+    async def daily(self, ctx: commands.Context):
+        user_doc = await erin_db.get_user(str(ctx.author.id))
+        user_claims = user_doc["last_claim"]
+        last_claim = user_claims["daily"]
+        one_hr_ago = arrow.utcnow().shift(days=-1).timestamp()
+        if one_hr_ago >= last_claim:
+            user_doc["balance"] += DAILY_CLAIM
+            user_claims["daily"] = arrow.utcnow().timestamp()
+            await erin_db.set_user(str(ctx.author.id), user_doc)
+            embed = self.make_embed(ctx)
+            embed.description = f"{ctx.author.mention} you claimed your " \
+                                f"daily and got " \
+                                f"{DAILY_CLAIM} {CURRENCY_NAME}! You can " \
+                                f"claim again in 1 day."
+        else:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            can_get_in = arrow.get(last_claim).shift(days=1)
+            embed.description = f"{ctx.author.mention} you already claimed " \
+                                f"your daily reward. You can get it again " \
+                                f"in {can_get_in.humanize(only_distance=True)}"
+        await ctx.send(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Economy(bot))
