@@ -160,9 +160,7 @@ class Economy(ErinCog):
 
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="betcoinflip", aliases=["bet_coin_flip", "betflip",
-                                                   "bet_flip", "coinflip",
-                                                   "coin_flip", "betcoin",
-                                                   "bet_coin", "bcf", "bf"],
+                                                   "bet_flip", "bf"],
                       description=f"Bet some {CURRENCY_NAME} on a coin flip!")
     async def bet_coin_flip(self, ctx: commands.Context, amount: int,
                             side: str):
@@ -202,6 +200,48 @@ class Economy(ErinCog):
                 embed.description = f"{ctx.author.mention} better luck next " \
                                     f"time - it was " \
                                     f"{'tails' if side == 'heads' else 'heads'}"
+            await erin_db.set_user(str(ctx.author.id), user_doc)
+            await ctx.message.reply(embed=embed)
+
+    @commands.cooldown(5, 10, BucketType.user)
+    @commands.command(name="betdiceroll", aliases=["bet_dice_roll", "betdice",
+                                                   "bet_dice", "betroll",
+                                                   "bet_roll", "bd", "bdr",
+                                                   "br"],
+                      description=f"Bet some {CURRENCY_NAME} on a dice!")
+    async def bet_dice_roll(self, ctx: commands.Context, amount: int,
+                            number: int):
+        user_doc = await erin_db.get_user(str(ctx.author.id))
+        user_balance = user_doc["balance"]
+        if amount < 1:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            embed.description = f"{ctx.author.mention} you cannot bet " \
+                                f"less then 1 {CURRENCY_NAME}!"
+            await ctx.message.reply(embed=embed)
+            return
+        elif amount > user_balance:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            embed.description = f"{ctx.author.mention} you cannot bet more " \
+                                f"then you have!"
+            await ctx.message.reply(embed=embed)
+            return
+        else:
+            embed = self.make_embed(ctx)
+            if random_chance(BET_DICE_ROLL_CHANCE):
+                reward = round(amount * BET_DICE_ROLL_REWARD)
+                user_doc["balance"] += reward
+                embed.description = f"{ctx.author.mention} it was {number}! " \
+                                    f"You win {reward} {CURRENCY_NAME}."
+            else:
+                user_doc["balance"] -= amount
+                actual_side = randint(1, 6)
+                while actual_side == number:
+                    actual_side = randint(1, 6)
+                embed.description = f"{ctx.author.mention} better luck next " \
+                                    f"time - it was " \
+                                    f"{actual_side}"
             await erin_db.set_user(str(ctx.author.id), user_doc)
             await ctx.message.reply(embed=embed)
 
