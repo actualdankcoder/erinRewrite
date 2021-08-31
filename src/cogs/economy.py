@@ -24,7 +24,6 @@ logger.debug(f"Path to .env file is {env_path}")
 assert env_path.exists() and env_path.is_file()
 load_dotenv(dotenv_path=env_path)
 
-
 CURRENCY_NAME = "Erin"
 
 HOURLY_CLAIM = 100
@@ -35,6 +34,13 @@ BET_COIN_FLIP_CHANCE = 40
 BET_COIN_FLIP_REWARD = 1.75
 BET_DICE_ROLL_CHANCE = 10
 BET_DICE_ROLL_REWARD = 2.5
+BET_WHEEL_STRING = """
+x1.50 x2.50 x1.00
+x0.20   {ARROW}   x0.80
+x3.00 x0.40 x0.60
+"""
+BET_WHEEL_REWARDS = [1.5, 2.5, 1, 0.8, 0.6, 0.4, 3, 0.2]
+BET_WHEEL_ARROWS = ["↖", "⬆", "↗", "➡", "↘", "⬇", "↙", "⬅"]
 
 
 def random_chance(chance: int) -> bool:
@@ -242,6 +248,43 @@ class Economy(ErinCog):
                 embed.description = f"{ctx.author.mention} better luck next " \
                                     f"time - it was " \
                                     f"{actual_side}"
+            await erin_db.set_user(str(ctx.author.id), user_doc)
+            await ctx.message.reply(embed=embed)
+
+    @commands.cooldown(5, 10, BucketType.user)
+    @commands.command(name="betwheel", aliases=["bet_wheel", "wheel"],
+                      description=f"Bet some {CURRENCY_NAME} on a wheel!")
+    async def bet_wheel(self, ctx: commands.Context, amount: int):
+        user_doc = await erin_db.get_user(str(ctx.author.id))
+        user_balance = user_doc["balance"]
+        if amount < 1:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            embed.description = f"{ctx.author.mention} you cannot bet " \
+                                f"less then 1 {CURRENCY_NAME}!"
+            await ctx.message.reply(embed=embed)
+            return
+        elif amount > user_balance:
+            embed = self.make_error_embed(ctx)
+            embed.title = ""
+            embed.description = f"{ctx.author.mention} you cannot bet more " \
+                                f"then you have!"
+            await ctx.message.reply(embed=embed)
+            return
+        else:
+            embed = self.make_embed(ctx)
+            reward_index = randint(0, len(BET_WHEEL_REWARDS) - 1)
+            reward = BET_WHEEL_REWARDS[reward_index]
+            pointer = BET_WHEEL_ARROWS[reward_index]
+            wheel_string = BET_WHEEL_STRING.format(ARROW=pointer)
+            user_doc["balance"] -= amount
+            gained = round(amount * reward)
+            user_doc["balance"] += gained
+            embed.description = f"{ctx.author.mention} you win {gained} " \
+                                f"{CURRENCY_NAME}!\n\n" \
+                                f"```text\n" \
+                                f"{wheel_string}\n" \
+                                f"```"
             await erin_db.set_user(str(ctx.author.id), user_doc)
             await ctx.message.reply(embed=embed)
 
