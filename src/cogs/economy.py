@@ -78,7 +78,7 @@ class Economy(ErinCog):
         user_doc = await erin_db.get_user(str(user.id))
         user_balance = user_doc["balance"]
         embed.description += f"{user.mention} has {user_balance} {CURRENCY_NAME}\n"
-        await ctx.send(embed=embed)
+        await ctx.message.reply(embed=embed)
 
     @commands.cooldown(5, 10, BucketType.user)
     @commands.command(name="hourly",
